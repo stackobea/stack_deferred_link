@@ -85,6 +85,7 @@ The app will decode <value> after installation
 
 
 **iOS**
+
 Your webpage should ensure the deep link is placed in the clipboard:  
 
 ```bash
@@ -119,6 +120,7 @@ This plugin solves both platforms:
 ✔ Subdomains + www + scheme normalization
 
 ✔ Clean, safe architecture with cached responses
+
 
 
 ## 🧠 Use Cases
