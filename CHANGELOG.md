@@ -1,3 +1,6 @@
+## 0.0.2
+- Stable release
+
 ## 0.0.1
 - First stable release
 - Android Install Referrer support

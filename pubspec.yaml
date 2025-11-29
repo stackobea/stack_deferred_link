@@ -1,6 +1,6 @@
 name: stack_deferred_link
-description: "Deferred deep-link / install referrer helper."
-version: 0.0.1
+description: "Lightweight Flutter plugin for Android Install Referrer and iOS clipboard-based deferred deep linking—lets users land on the exact screen post-install without Branch, AppsFlyer, or Adjust."
+version: 0.0.2
 homepage: https://github.com/stackobea/stack_deferred_link
 repository: https://github.com/stackobea/stack_deferred_link
 issue_tracker: https://github.com/stackobea/stack_deferred_link/issues

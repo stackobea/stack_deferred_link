@@ -17,14 +17,15 @@ class ReferrerInfo {
     required int installBeginTimestampServerSeconds,
     required String? installVersion,
     required bool googlePlayInstantParam,
-  }) : _installReferrer = installReferrer,
-       _referrerClickTimestampSeconds = referrerClickTimestampSeconds,
-       _installBeginTimestampSeconds = installBeginTimestampSeconds,
-       _referrerClickTimestampServerSeconds =
-           referrerClickTimestampServerSeconds,
-       _installBeginTimestampServerSeconds = installBeginTimestampServerSeconds,
-       _installVersion = installVersion,
-       _googlePlayInstantParam = googlePlayInstantParam;
+  })  : _installReferrer = installReferrer,
+        _referrerClickTimestampSeconds = referrerClickTimestampSeconds,
+        _installBeginTimestampSeconds = installBeginTimestampSeconds,
+        _referrerClickTimestampServerSeconds =
+            referrerClickTimestampServerSeconds,
+        _installBeginTimestampServerSeconds =
+            installBeginTimestampServerSeconds,
+        _installVersion = installVersion,
+        _googlePlayInstantParam = googlePlayInstantParam;
 
   final String? _installReferrer;
   final int _referrerClickTimestampSeconds;
