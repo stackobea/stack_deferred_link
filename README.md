@@ -234,6 +234,47 @@ debugPrint(params['referrer']); // campaign123
 debugPrint(params['uid']); // optional
 ```
 
+
+
+### Extracting a Single Query Parameter
+
+> ReferrerInfo.getParam(key) lets you safely extract a single query parameter from the install referrer string — regardless of how Google Play sends it.
+
+This method works with:
+
+- Full URLs (https://example.com/path?ref=123)
+
+- URLs without schemes (example.com/path?ref=123)
+
+- Subdomains (https://sub.example.com/...)
+
+- Raw Android referrer strings (utm_source=google&ref=mycode)
+
+- Any nested query formats  
+
+
+✔ Example (Android Install Referrer)
+
+```dart
+final info = await StackDeferredLink.getInstallReferrerAndroid();
+final ref = info.getParam('ref');
+print(ref); // e.g. "promo123"
+
+```
+
+✔ Example (Multiple params)
+
+```dart
+final campaign = info.getParam('utm_campaign');
+final source = info.getParam('utm_source');
+
+```  
+
+
+
+
+
+
 Throws
 
 | Exception           | Reason                                          |

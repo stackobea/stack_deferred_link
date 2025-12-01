@@ -1,9 +1,11 @@
-class HelperReferrerIos {
+class HelperReferrer {
   /// Returns true if [clipboard] deep link matches [pattern],
   /// supporting:
   ///   - http / https / no scheme
   ///   - www.
   ///   - any subdomain of the pattern's base domain
+  ///   - wildcard host:      "*.example.com"
+  ///   - wildcard path:      "example.com/*", "example.com/profile/*"
   ///
   /// Examples:
   ///   clipboard: "https://sub.example.com/profile?x=1"
@@ -13,15 +15,26 @@ class HelperReferrerIos {
   ///   clipboard: "https://m.example.com/offer?id=1"
   ///   pattern:   "example.com"
   ///   => true (same base domain, any path)
+  ///
+  ///   clipboard: "https://foo.example.com/profile/settings"
+  ///   pattern:   "*.example.com/profile/*"
+  ///   => true (wildcard subdomain + wildcard path)
   static bool matchesDeepLinkPattern({
     required String clipboard,
     required String pattern,
   }) {
+    final trimmedPattern = pattern.trim();
+
+    // Global wildcard: "*" → match anything that can be parsed as a URL.
+    if (trimmedPattern == '*') {
+      return parseToUri(clipboard) != null;
+    }
+
     // Quick normalization for raw string compare
     final normalizedClipboard = normalizeUrlLikeString(clipboard);
-    final normalizedPattern = normalizeUrlLikeString(pattern);
+    final normalizedPattern = normalizeUrlLikeString(trimmedPattern);
 
-    // Simple direct/prefix check.
+    // Simple direct/prefix check (keeps your original fast path).
     if (normalizedClipboard == normalizedPattern ||
         normalizedClipboard.startsWith(normalizedPattern)) {
       return true;
@@ -29,7 +42,7 @@ class HelperReferrerIos {
 
     // Try URI-based matching for domain and path
     final clipboardUri = parseToUri(clipboard);
-    final patternUri = parseToUri(pattern);
+    final patternUri = parseToUri(trimmedPattern);
 
     if (clipboardUri == null || patternUri == null) {
       return false;
@@ -45,28 +58,52 @@ class HelperReferrerIos {
       return false;
     }
 
-    // Host match rules:
-    //  - same base host
-    //  - OR clipboard host is a subdomain of pattern base host
-    final hostMatches =
-        cbHostBase == ptHostBase || cbHostBase.endsWith('.$ptHostBase');
+    // -----------------------------
+    // Host match rules (with wildcard)
+    // -----------------------------
+    bool hostMatches;
+
+    if (ptHostBase.startsWith('*.')) {
+      // Pattern like "*.example.com" → match any subdomain + root.
+      final base = ptHostBase.substring(2); // remove "*."
+      hostMatches = cbHostBase == base || cbHostBase.endsWith('.$base');
+    } else {
+      // Original behavior:
+      //  - same base host
+      //  - OR clipboard host is a subdomain of pattern base host
+      hostMatches =
+          cbHostBase == ptHostBase || cbHostBase.endsWith('.$ptHostBase');
+    }
 
     if (!hostMatches) {
       return false;
     }
 
-    // Path rule:
-    //  - if pattern has no specific path ("/" or ""), accept any clipboard path
-    //  - else clipboard path must start with pattern path
-    final patternPath = patternUri.path.isEmpty || patternUri.path == '/'
-        ? null
-        : patternUri.path;
+    // -----------------------------
+    // Path rule (with wildcard)
+    // -----------------------------
+    final clipboardPath = clipboardUri.path.isEmpty ? '/' : clipboardUri.path;
+    final patternPathRaw = patternUri.path;
 
-    if (patternPath == null) {
+    // If pattern has no specific path ("/" or ""), accept any clipboard path
+    if (patternPathRaw.isEmpty || patternPathRaw == '/') {
       return true; // any path is OK as long as host matched
     }
 
-    return clipboardUri.path.startsWith(patternPath);
+    // Wildcard entire path: "example.com/*" or "https://example.com/*"
+    if (patternPathRaw == '/*' || patternPathRaw == '*') {
+      return true;
+    }
+
+    // Path wildcard suffix: "/profile/*" → match /profile and anything under it
+    if (patternPathRaw.endsWith('/*')) {
+      final basePath = patternPathRaw.substring(
+          0, patternPathRaw.length - 1); // keep trailing "/"
+      return clipboardPath.startsWith(basePath);
+    }
+
+    // Default: path prefix match (existing behaviour)
+    return clipboardPath.startsWith(patternPathRaw);
   }
 
   /// Normalize URL-like strings so that:

@@ -64,7 +64,6 @@ class _MyAppState extends State<MyApp> {
     try {
       debugPrint('📥 Fetching Android Install Referrer…');
 
-      // Use your Android method here:
       final info = await StackDeferredLink.getInstallReferrerAndroid();
 
       debugPrint('✅ Install Referrer fetched successfully:');
@@ -75,6 +74,15 @@ class _MyAppState extends State<MyApp> {
         _referrerInfo = info;
         _parsedParams = info.asQueryParameters;
       });
+
+      // -------------------------------------------------------
+      // NEW: Android specific param extraction
+      // -------------------------------------------------------
+      final refParam = info.getParam("referrer");
+      debugPrint("Android getParam('referrer') => $refParam");
+
+      final uidParam = info.getParam("uid");
+      debugPrint("Android getParam('uid') => $uidParam");
     } on UnsupportedError catch (_) {
       debugPrint(
         '⚠ Install Referrer is not supported on this platform (iOS/web/desktop).',
@@ -103,7 +111,7 @@ class _MyAppState extends State<MyApp> {
           'https://example.com/profile',
           'http://example.com/profile',
           'example.com/profile',
-          'example.com', // base domain
+          'example.com',
         ],
       );
 
@@ -123,13 +131,8 @@ class _MyAppState extends State<MyApp> {
         _iosParams = result.queryParameters;
       });
 
-      // Example: you could route based on params here if you want
       final referrer = result.getParam('referrer');
-      //final uid = result.getParam('uid');
-      debugPrint('referrer = $referrer');
-
-      // Optionally clear clipboard:
-      // await Clipboard.setData(const ClipboardData(text: ''));
+      debugPrint('iOS getParam("referrer") => $referrer');
     } on UnsupportedError catch (e) {
       debugPrint('Not supported on this platform (iOS method): $e');
       setState(() => _errorMessage = 'Not supported on this platform');

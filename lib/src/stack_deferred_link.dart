@@ -99,6 +99,24 @@ class ReferrerInfo {
     return uri.queryParameters;
   }
 
+  String getParam(String key) {
+    final ref = installReferrer?.trim();
+    if (ref == null || ref.isEmpty) {
+      return "";
+    }
+
+    // If URL-like, parse normally, else wrap inside dummy URL
+    final uri = ref.contains("://")
+        ? HelperReferrer.parseToUri(ref)
+        : Uri.tryParse("https://dummy?$ref");
+
+    if (uri == null) {
+      return "";
+    }
+
+    return uri.queryParameters[key] ?? "";
+  }
+
   @override
   String toString() {
     return 'ReferrerInfo('
@@ -219,7 +237,7 @@ class StackDeferredLink {
 
       // Check if clipboard text matches any deep link pattern (with subdomain + www rules)
       final hasMatch = deepLinks.any(
-        (pattern) => HelperReferrerIos.matchesDeepLinkPattern(
+        (pattern) => HelperReferrer.matchesDeepLinkPattern(
           clipboard: text,
           pattern: pattern,
         ),
@@ -231,7 +249,7 @@ class StackDeferredLink {
       }
 
       // Try to parse the clipboard text as a URI.
-      final uri = HelperReferrerIos.parseToUri(text);
+      final uri = HelperReferrer.parseToUri(text);
       if (uri == null) {
         // We matched the pattern but couldn't parse it as URI.
         return null;
