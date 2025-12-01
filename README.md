@@ -1,4 +1,4 @@
-# Flutter Stack Deferred Link
+# Flutter Deferred Deep Link
 
 [![Pub Version](https://img.shields.io/pub/v/stack_deferred_link)](https://pub.dev/packages/stack_deferred_link)
 [![Pub Likes](https://img.shields.io/pub/likes/stack_deferred_link)](https://pub.dev/packages/stack_deferred_link)
@@ -13,6 +13,10 @@ heavy attribution SDKs.
 
 Deferred deep linking allows your user to install your app after clicking a link, and still land on
 the correct screen or carry referral metadata after install.
+
+
+![Stack Deferred Link Banner](https://raw.githubusercontent.com/stackobea/stack_deferred_link/main/pub_dev_banner.png)
+
 
 ## 📘 How It Works — Deferred Deep Linking (Android + iOS)
 
@@ -48,6 +52,7 @@ This API lets us read details from:
 
 ```bash
 https://play.google.com/store/apps/details?id=<package>&referrer=<encoded_params>
+
 ```
 
 From the referrer parameter, we decode and route the user to the correct screen.  
@@ -78,6 +83,7 @@ When a user clicks the deep link, the web page should redirect them to:
 
 ```bash
 https://play.google.com/store/apps/details?id=<your.package>&referrer=<param>%3D<value>
+
 ```
 
 Encode your parameters properly  
@@ -90,6 +96,7 @@ Your webpage should ensure the deep link is placed in the clipboard:
 
 ```bash
 example.com?referrer=<value>&page=<screen>
+
 ```
 
 The plugin will read the clipboard to retrieve these values on first app launch.
@@ -240,6 +247,7 @@ Reads clipboard → checks patterns → returns matched deep link + params.
 
 ```dart
 final result = await StackDeferredLink.getInstallReferrerIos(deepLinks: ["https://example.com/profile","example.com","sub.example.com"]);
+
 ```
 
 Returns: IosClipboardDeepLinkResult?
@@ -273,6 +281,7 @@ if (res != null) {
   final referrer = res.getParam('referrer');
   debugPrint("iOS Referrer: $referrer");
 }
+
 ```
 
 ## 🧪 Full Usage Example (Android + iOS)
