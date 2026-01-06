@@ -1,6 +1,3 @@
-## 1.0.1
-- Upgrade the versions
-
 ## 1.0.0
 
 ### Added
